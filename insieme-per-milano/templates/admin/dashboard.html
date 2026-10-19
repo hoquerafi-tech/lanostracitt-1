@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Pannello comitato</h1>
+
+<h2>Segnalazioni</h2>
+<table>
+<tr><th>Titolo</th><th>Autore</th><th>Stato</th></tr>
+{% for s in segnalazioni %}
+<tr><td><a href="{{ url_for('dettaglio', id=s.id) }}">{{ s.titolo }}</a></td>
+<td>{{ s.nome }} {{ s.cognome }}</td>
+<td><form method="post" action="{{ url_for('admin_stato_segnalazione', id=s.id) }}">
+  <select name="stato" onchange="this.form.submit()">
+    {% for st in stati_s %}<option {{ 'selected' if st == s.stato }}>{{ st }}</option>{% endfor %}
+  </select></form></td></tr>
+{% endfor %}
+</table>
+
+<h2>Utenti</h2>
+<table>
+<tr><th>Nome</th><th>Email</th><th>Zona</th><th>Ruolo</th><th>Stato / motivo</th></tr>
+{% for u in utenti %}
+<tr><td>{{ u.nome }} {{ u.cognome }}</td><td>{{ u.email }}</td><td>{{ u.zona }}</td><td>{{ u.potere }}</td>
+<td>{% if u.id != sessione.id_utente %}
+  <form method="post" action="{{ url_for('admin_stato_utente', id=u.id) }}" class="riga">
+    <select name="stato">{% for st in stati_u %}<option {{ 'selected' if st == u.stato }}>{{ st }}</option>{% endfor %}</select>
+    <input name="motivo" placeholder="motivo">
+    <button>OK</button></form>
+  {% else %}{{ u.stato }}{% endif %}</td></tr>
+{% endfor %}
+</table>
+
+<h2>Ultime azioni (tracciabilità)</h2>
+<table>
+<tr><th>Utente</th><th>Azione</th><th>Inizio</th><th>Fine</th></tr>
+{% for l in log %}
+<tr><td>{{ l.nome }} {{ l.cognome }}</td><td>{{ l.tipo_azione }}</td><td>{{ l.data_inizio }}</td><td>{{ l.data_fine or '' }}</td></tr>
+{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Le priorità dei quartieri</h1>
+<form method="get" class="filtro">
+  <select name="categoria" onchange="this.form.submit()">
+    <option value="">Tutte le categorie</option>
+    {% for c in categorie %}
+      <option value="{{ c.id }}" {{ 'selected' if c.id == id_cat }}>{{ c.nome_categoria }}</option>
+    {% endfor %}
+  </select>
+</form>
+
+<div id="mappa"></div>
+
+<ol class="classifica">
+{% for s in segnalazioni %}
+  <li>
+    <span class="voti">{{ s.sostegni }}<small>sostegni</small></span>
+    <div>
+      <a href="{{ url_for('dettaglio', id=s.id) }}"><strong>{{ s.titolo }}</strong></a>
+      <div class="meta">{{ s.categorie }} · {{ s.nome }} {{ s.cognome }}
+        · <span class="badge">{{ s.stato }}</span></div>
+    </div>
+  </li>
+{% else %}
+  <p>Nessuna segnalazione.</p>
+{% endfor %}
+</ol>
+
+<script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
+<script>
+const punti = {{ segnalazioni | selectattr('lat') | list | tojson }};
+const map = new maplibregl.Map({
+  container: 'mappa',
+  style: 'https://tiles.openfreemap.org/styles/liberty',
+  center: [9.19, 45.4642],
+  zoom: 12
+});
+map.addControl(new maplibregl.NavigationControl(), 'top-right');
+map.addControl(new maplibregl.AttributionControl({
+  compact: true,
+  customAttribution: '&copy; <a href="https://openfreemap.org">OpenFreeMap</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+}));
+map.on('load', () => punti.forEach(p => {
+  const popup = document.createElement('div');
+  const link = document.createElement('a');
+  link.href = `/segnalazione/${encodeURIComponent(p.id)}`;
+  link.textContent = p.titolo;
+  popup.append(link, document.createElement('br'));
+  popup.append(document.createTextNode(`${p.sostegni} sostegni`));
+  new maplibregl.Marker()
+    .setLngLat([Number(p.lng), Number(p.lat)])
+    .setPopup(new maplibregl.Popup().setDOMContent(popup))
+    .addTo(map);
+}));
+</script>
+{% endblock %}

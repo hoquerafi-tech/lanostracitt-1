@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ s.titolo }}</h1>
+<p class="meta">di {{ s.nome }} {{ s.cognome }} ({{ s.zona }}) · {{ s.data_creazione }}
+  · <span class="badge">{{ s.stato }}</span></p>
+<p>{% for c in cats %}<span class="badge">{{ c.nome_categoria }}</span> {% endfor %}</p>
+{% for m in media %}
+  {% if m.contenuto.rsplit('.',1)[-1] in ['mp4','mov','webm'] %}
+    <video controls src="{{ url_for('uploads', nome=m.contenuto) }}"></video>
+  {% else %}
+    <img src="{{ url_for('uploads', nome=m.contenuto) }}" alt="prova">
+  {% endif %}
+{% endfor %}
+<p>{{ s.descrizione }}</p>
+<p><strong>{{ sostegni }}</strong> sostegni</p>
+{% if sessione.id_utente %}
+  {% if gia %}<p>✔ Hai già sostenuto questa segnalazione.</p>
+  {% else %}
+  <form method="post" action="{{ url_for('sostieni', id=s.id) }}"><button>Sostieni</button></form>
+  {% endif %}
+{% else %}
+  <p><a href="{{ url_for('login') }}">Accedi</a> per sostenere.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Registrati</h1>
+<form method="post" class="card">
+  <label>Nome <input name="nome" required maxlength="50"></label>
+  <label>Cognome <input name="cognome" required maxlength="50"></label>
+  <label>Email <input type="email" name="email" required></label>
+  <label>Password (min. 8 caratteri) <input type="password" name="password" required minlength="8"></label>
+  <label>Zona / quartiere <input name="zona" required maxlength="100" placeholder="es. Navigli"></label>
+  <button>Crea profilo</button>
+</form>
+{% endblock %}

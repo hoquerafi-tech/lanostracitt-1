@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Insieme per Milano{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css">
+</head>
+<body>
+<header>
+  <a class="logo" href="{{ url_for('index') }}">Insieme per Milano</a>
+  <nav>
+    {% if sessione.id_utente %}
+      <a href="{{ url_for('nuova') }}">+ Segnala</a>
+      <a href="{{ url_for('mie_segnalazioni') }}">Le mie segnalazioni</a>
+      {% if sessione.potere == 'admin' %}<a href="{{ url_for('admin') }}">Admin</a>{% endif %}
+      <span>Ciao, {{ sessione.nome }}</span>
+      <a href="{{ url_for('logout') }}">Esci</a>
+    {% else %}
+      <a href="{{ url_for('login') }}">Accedi</a>
+      <a href="{{ url_for('registrazione') }}">Registrati</a>
+    {% endif %}
+  </nav>
+</header>
+<main>
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, m in msgs %}<div class="flash {{ cat }}">{{ m }}</div>{% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

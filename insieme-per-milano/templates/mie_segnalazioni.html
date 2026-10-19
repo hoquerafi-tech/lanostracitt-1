@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Le mie segnalazioni</h1>
+<ol class="classifica">
+{% for s in segnalazioni %}
+  <li>
+    <div>
+      <a href="{{ url_for('dettaglio', id=s.id) }}"><strong>{{ s.titolo }}</strong></a>
+      <div class="meta">{{ s.data_creazione }} · <span class="badge">{{ s.stato }}</span></div>
+      {% if s.stato == 'in_revisione' %}<p>In attesa di approvazione da parte dell'admin.</p>{% endif %}
+      {% if s.stato == 'ricevuta' %}<p>Approvata dall'admin.</p>{% endif %}
+    </div>
+  </li>
+{% else %}
+  <p>Non hai ancora inviato segnalazioni.</p>
+{% endfor %}
+</ol>
+{% endblock %}
